@@ -8,6 +8,7 @@
     /** @type {string[]} */ morse,
     /** @type {string} */ word
   ) => {
+    word = word.toLowerCase();
     for (const letter of morse) {
       if (!(letter in morseCodeMappings)) return false;
       const meaning = morseCodeMappings[letter].find((meaning) =>
