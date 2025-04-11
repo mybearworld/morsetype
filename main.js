@@ -82,10 +82,8 @@
             /** @type {HTMLElement} */ (e.target).closest("button")
           )
             return;
+          if (lastKeyDown === null) return;
           e.preventDefault();
-          if (lastKeyDown === null) {
-            throw new Error("keyup with lastKeyDown === null");
-          }
           const dist = Date.now() - lastKeyDown;
           letter += dist < 250 ? "." : "-";
           lastKeyDown = null;
