@@ -51,12 +51,25 @@
         let lastKeyDown = null;
         /** @type {number | null} */
         let to = null;
-        const kd = () => {
+        const kd = (/** @type {Event} */ e) => {
+          if (
+            e.target &&
+            /** @type {HTMLElement} */ (e.target).closest("button")
+          )
+            return;
+          e.preventDefault();
           if (!lastKeyDown) lastKeyDown = Date.now();
           if (to) clearInterval(to);
         };
         document.body.addEventListener("keydown", kd);
-        const ku = () => {
+        document.body.addEventListener("touchstart", kd);
+        const ku = (/** @type {Event} */ e) => {
+          if (
+            e.target &&
+            /** @type {HTMLElement} */ (e.target).closest("button")
+          )
+            return;
+          e.preventDefault();
           if (lastKeyDown === null) {
             throw new Error("keyup with lastKeyDown === null");
           }
@@ -72,6 +85,7 @@
           }, 500);
         };
         document.body.addEventListener("keyup", ku);
+        document.body.addEventListener("touchend", ku);
         /** @param {Event} e */
         const cl = (e) => {
           resolve({ morseCode: word, again: e.target === again });
