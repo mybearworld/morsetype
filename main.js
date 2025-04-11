@@ -103,7 +103,7 @@
     new Promise((resolve) =>
       languageSelect.addEventListener("submit", (e) => {
         e.preventDefault();
-        resolve();
+        if (languageDropdown.value !== "") resolve();
       })
     )
   );
