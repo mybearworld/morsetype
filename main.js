@@ -17,7 +17,7 @@
       if (!meaning) return false;
       word = word.slice(meaning.length);
     }
-    return word === "" ? true : false;
+    return word === "";
   };
 
   /** @type {HTMLFormElement | null} */
