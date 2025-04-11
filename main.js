@@ -2,14 +2,16 @@
 (async () => {
   const getWord = () => {
     return new Promise((resolve) => {
-      let word = "";
+      /** @type {string[]} */
+      const word = [];
+      let letter = "";
       /** @type {number | null} */
       let lastKeyDown = null;
       /** @type {number | null} */
-      let iv = null;
+      let to = null;
       const kd = () => {
         if (!lastKeyDown) lastKeyDown = Date.now();
-        if (iv) clearInterval(iv);
+        if (to) clearInterval(to);
       };
       document.body.addEventListener("keydown", kd);
       const ku = () => {
@@ -17,13 +19,17 @@
           throw new Error("keyup with lastKeyDown === null");
         }
         const dist = Date.now() - lastKeyDown;
-        word += dist < 250 ? "." : "-";
+        letter += dist < 250 ? "." : "-";
         lastKeyDown = null;
-        iv = setInterval(() => {
-          resolve(word);
-          document.body.removeEventListener("keydown", kd);
-          document.body.removeEventListener("keyup", ku);
-        }, 500);
+        to = setTimeout(() => {
+          word.push(letter);
+          letter = "";
+          to = setTimeout(() => {
+            resolve(word);
+            document.body.removeEventListener("keydown", kd);
+            document.body.removeEventListener("keyup", ku);
+          }, 250);
+        }, 250);
       };
       document.body.addEventListener("keyup", ku);
     });
