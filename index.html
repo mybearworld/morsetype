@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MorseType</title>
   </head>
-  <body></body>
+  <body>
+    <form id="language-select">
+      <select>
+        <option selected disabled>Choose a language...</option>
+      </select>
+      <button type="submit">Go!</button>
+    </form>
+    <main hidden>
+      <div id="main-word"></div>
+      <div id="morse-preview"></div>
+      <button type="button" id="done">Done</button>
+    </main>
+  </body>
   <script src="main.js"></script>
 </html>

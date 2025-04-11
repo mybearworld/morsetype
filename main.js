@@ -16,8 +16,27 @@
       if (!meaning) return false;
       word = word.slice(meaning.length);
     }
-    return true;
+    return word === "" ? true : false;
   };
+
+  /** @type {HTMLFormElement | null} */
+  const languageSelect = document.querySelector("#language-select");
+  const languageDropdown = languageSelect?.querySelector("select");
+  const main = document.querySelector("main");
+  const mainWord = document.querySelector("#main-word");
+  const morsePreview = document.querySelector("#morse-preview");
+  /** @type {HTMLButtonElement | null} */
+  const done = document.querySelector("#done");
+  if (
+    !languageSelect ||
+    !languageDropdown ||
+    !main ||
+    !mainWord ||
+    !morsePreview ||
+    !done
+  ) {
+    throw new Error("Required element doesn't exist");
+  }
 
   const getWord = () => {
     return new Promise((resolve) => {
@@ -40,22 +59,66 @@
         const dist = Date.now() - lastKeyDown;
         letter += dist < 250 ? "." : "-";
         lastKeyDown = null;
+        morsePreview.textContent =
+          [...word, letter].join(" / ") + " (listening)";
         to = setTimeout(() => {
           word.push(letter);
+          morsePreview.textContent = word.join(" / ");
           letter = "";
-          to = setTimeout(() => {
-            resolve(word);
-            document.body.removeEventListener("keydown", kd);
-            document.body.removeEventListener("keyup", ku);
-          }, 250);
         }, 250);
       };
       document.body.addEventListener("keyup", ku);
+      const cl = () => {
+        resolve(word);
+        document.body.removeEventListener("keydown", kd);
+        document.body.removeEventListener("keyup", ku);
+        morsePreview.textContent = "";
+        done.removeEventListener("click", cl);
+      };
+      done.addEventListener("click", cl);
     });
   };
 
+  /** @type {string[]} */
+  const languages = await (
+    await fetch(
+      "https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/languages/_list.json"
+    )
+  ).json();
+  languages.forEach((language) => {
+    const option = document.createElement("option");
+    option.value = language;
+    option.textContent = language;
+    languageDropdown.append(option);
+  });
+  await /** @type {Promise<void>} */ (
+    new Promise((resolve) =>
+      languageSelect.addEventListener("submit", (e) => {
+        e.preventDefault();
+        resolve();
+      })
+    )
+  );
+  languageSelect.setAttribute("hidden", "");
+  main.removeAttribute("hidden");
+  /** @type {string[]} */
+  const words = (
+    await (
+      await fetch(
+        `https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/languages/${languageDropdown.value}.json`
+      )
+    ).json()
+  ).words;
   while (true) {
-    const word = await getWord();
-    console.log(checkMorseCode(word, "sos"), checkMorseCode(word, "ä"), word);
+    const word = words[Math.floor(Math.random() * words.length)];
+    mainWord.textContent = word;
+    while (true) {
+      const moseCode = await getWord();
+      const correct = checkMorseCode(moseCode, word);
+      alert(correct ? "That's right!" : "Not quite!");
+      if (correct) {
+        break;
+      }
+    }
   }
 })();
