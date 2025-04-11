@@ -65,7 +65,7 @@
           word.push(letter);
           morsePreview.textContent = word.join(" / ");
           letter = "";
-        }, 250);
+        }, 500);
       };
       document.body.addEventListener("keyup", ku);
       const cl = () => {
