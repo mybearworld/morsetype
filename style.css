@@ -26,6 +26,15 @@ select:hover,
 button:hover {
   background-color: #115e59;
 }
+select.secondary,
+button.secondary {
+  background-color: #e5e7eb;
+  color: inherit;
+}
+select.secondary:hover,
+button.secondary:hover {
+  background-color: #d1d5db;
+}
 
 #language-select,
 main {

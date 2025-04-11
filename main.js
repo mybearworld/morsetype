@@ -27,56 +27,64 @@
   const morsePreview = document.querySelector("#morse-preview");
   /** @type {HTMLButtonElement | null} */
   const done = document.querySelector("#done");
+  /** @type {HTMLButtonElement | null} */
+  const again = document.querySelector("#again");
   if (
     !languageSelect ||
     !languageDropdown ||
     !main ||
     !mainWord ||
     !morsePreview ||
-    !done
+    !done ||
+    !again
   ) {
     throw new Error("Required element doesn't exist");
   }
 
   const getWord = () => {
-    return new Promise((resolve) => {
-      /** @type {string[]} */
-      const word = [];
-      let letter = "";
-      /** @type {number | null} */
-      let lastKeyDown = null;
-      /** @type {number | null} */
-      let to = null;
-      const kd = () => {
-        if (!lastKeyDown) lastKeyDown = Date.now();
-        if (to) clearInterval(to);
-      };
-      document.body.addEventListener("keydown", kd);
-      const ku = () => {
-        if (lastKeyDown === null) {
-          throw new Error("keyup with lastKeyDown === null");
-        }
-        const dist = Date.now() - lastKeyDown;
-        letter += dist < 250 ? "." : "-";
-        lastKeyDown = null;
-        morsePreview.textContent =
-          [...word, letter].join(" / ") + " (listening)";
-        to = setTimeout(() => {
-          word.push(letter);
-          morsePreview.textContent = word.join(" / ");
-          letter = "";
-        }, 500);
-      };
-      document.body.addEventListener("keyup", ku);
-      const cl = () => {
-        resolve(word);
-        document.body.removeEventListener("keydown", kd);
-        document.body.removeEventListener("keyup", ku);
-        morsePreview.textContent = "";
-        done.removeEventListener("click", cl);
-      };
-      done.addEventListener("click", cl);
-    });
+    return /** @type {Promise<{ morseCode: string[], again: boolean }>} */ (
+      new Promise((resolve) => {
+        /** @type {string[]} */
+        const word = [];
+        let letter = "";
+        /** @type {number | null} */
+        let lastKeyDown = null;
+        /** @type {number | null} */
+        let to = null;
+        const kd = () => {
+          if (!lastKeyDown) lastKeyDown = Date.now();
+          if (to) clearInterval(to);
+        };
+        document.body.addEventListener("keydown", kd);
+        const ku = () => {
+          if (lastKeyDown === null) {
+            throw new Error("keyup with lastKeyDown === null");
+          }
+          const dist = Date.now() - lastKeyDown;
+          letter += dist < 250 ? "." : "-";
+          lastKeyDown = null;
+          morsePreview.textContent =
+            [...word, letter].join(" / ") + " (listening)";
+          to = setTimeout(() => {
+            word.push(letter);
+            morsePreview.textContent = word.join(" / ");
+            letter = "";
+          }, 500);
+        };
+        document.body.addEventListener("keyup", ku);
+        /** @param {Event} e */
+        const cl = (e) => {
+          resolve({ morseCode: word, again: e.target === again });
+          document.body.removeEventListener("keydown", kd);
+          document.body.removeEventListener("keyup", ku);
+          morsePreview.textContent = "";
+          done.removeEventListener("click", cl);
+          again.removeEventListener("click", cl);
+        };
+        done.addEventListener("click", cl);
+        again.addEventListener("click", cl);
+      })
+    );
   };
 
   /** @type {string[]} */
@@ -113,10 +121,18 @@
     const word = words[Math.floor(Math.random() * words.length)];
     mainWord.textContent = word;
     while (true) {
-      const moseCode = await getWord();
-      const correct = checkMorseCode(moseCode, word);
-      alert(correct ? "That's right!" : "Not quite!");
-      if (correct) {
+      const { morseCode, again } = await getWord();
+      const correct = checkMorseCode(morseCode, word);
+      alert(
+        correct
+          ? again
+            ? "That was right"
+            : "That's right!"
+          : again
+            ? "Sure, let's try that again!"
+            : "Not quite!"
+      );
+      if (correct && !again) {
         break;
       }
     }
