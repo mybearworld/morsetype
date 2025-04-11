@@ -1,9 +1,12 @@
 // @ts-check
 (async () => {
   // from https://en.wikipedia.org/w/index.php?title=Morse_code&diff=prev&oldid=1283847196
-  // prettier-ignore
   /** @type {Record<string, string[]>} */
+  // prettier-ignore
   const morseCodeMappings = {'.-': ['a'], '-...': ['b'], '-.-.': ['c'], '-..': ['d'], '.': ['e'], '..-.': ['f'], '--.': ['g'], '....': ['h'], '..': ['i'], '.---': ['j'], '-.-': ['k'], '.-..': ['l'], '--': ['m'], '-.': ['n'], '---': ['o'], '.--.': ['p'], '--.-': ['q'], '.-.': ['r'], '...': ['s'], '-': ['t'], '..-': ['u'], '...-': ['v'], '.--': ['w'], '-..-': ['x'], '-.--': ['y'], '--..': ['z'], '-----': ['0'], '.----': ['1'], '..---': ['2'], '...--': ['3'], '....-': ['4'], '.....': ['5'], '-....': ['6'], '--...': ['7'], '---..': ['8'], '----.': ['9'], '.-.-.-': ['.'], '--..--': [','], '..--..': ['?'], '.----.': ["'"], '-.-.--': ['!'], '-..-.': ['/'], '-.--.-': [')'], '---...': [':'], '-.-.-.': [';'], '-....-': ['-'], '..--.-': ['_'], '.-..-.': ['"'], '...-..-': ['$'], '.--.-.': ['@'], '.--.-': ['à', 'å'], '.-.-': ['ä', 'ą', 'æ'], '-.-..': ['ć', 'ĉ', 'ç'], '----': ['ch', 'ĥ', 'š'], '..-..': ['ð', 'é', 'ę'], '..--.': ['đ'], '.-..-': ['è', 'ł'], '--.-.': ['ĝ'], '.---.': ['ĵ'], '--.--': ['ń', 'ñ'], '---.': ['ó', 'ö', 'ø'], '...-...': ['ś'], '.--..': ['þ'], '..--': ['ü', 'ŭ'], '--..-.': ['ź'], '--..-': ['ż']};
+  /** @type {Record<string, string>} */
+  // prettier-ignore
+  const toMorseCodeMappings = {'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.', 'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---', 'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---', 'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-', 'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--', 'z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '.': '.-.-.-', ',': '--..--', '?': '..--..', "'": '.----.', '!': '-.-.--', '/': '-..-.', ')': '-.--.-', ':': '---...', ';': '-.-.-.', '-': '-....-', '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.', 'à': '.--.-', 'å': '.--.-', 'ä': '.-.-', 'ą': '.-.-', 'æ': '.-.-', 'ć': '-.-..', 'ĉ': '-.-..', 'ç': '-.-..', 'ch': '----', 'ĥ': '----', 'š': '----', 'ð': '..-..', 'é': '..-..', 'ę': '..-..', 'đ': '..--.', 'è': '.-..-', 'ł': '.-..-', 'ĝ': '--.-.', 'ĵ': '.---.', 'ń': '--.--', 'ñ': '--.--', 'ó': '---.', 'ö': '---.', 'ø': '---.', 'ś': '...-...', 'þ': '.--..', 'ü': '..--', 'ŭ': '..--', 'ź': '--..-.', 'ż': '--..-'};
   const checkMorseCode = (
     /** @type {string[]} */ morse,
     /** @type {string} */ word
@@ -24,8 +27,13 @@
   const languageSelect = document.querySelector("#language-select");
   const languageDropdown = languageSelect?.querySelector("select");
   const main = document.querySelector("main");
+  const toMorse = document.querySelector("#to-morse");
   const mainWord = document.querySelector("#main-word");
   const morsePreview = document.querySelector("#morse-preview");
+  const fromMorse = document.querySelector("#from-morse");
+  const mainMorse = document.querySelector("#main-morse");
+  /** @type {HTMLInputElement | null} */
+  const answer = document.querySelector("#answer");
   /** @type {HTMLButtonElement | null} */
   const done = document.querySelector("#done");
   /** @type {HTMLButtonElement | null} */
@@ -34,8 +42,12 @@
     !languageSelect ||
     !languageDropdown ||
     !main ||
+    !toMorse ||
     !mainWord ||
     !morsePreview ||
+    !fromMorse ||
+    !mainMorse ||
+    !answer ||
     !done ||
     !again
   ) {
@@ -132,24 +144,61 @@
       )
     ).json()
   ).words;
+  let i = -1;
   while (true) {
+    i++;
+    const mode = i % 2 === 0 ? "to-morse" : "from-morse";
+    (mode === "to-morse" ? fromMorse : toMorse).setAttribute("hidden", "");
+    (mode === "to-morse" ? toMorse : fromMorse).removeAttribute("hidden");
     const word = words[Math.floor(Math.random() * words.length)];
-    mainWord.textContent = word;
-    while (true) {
-      const { morseCode, again } = await getWord();
-      const correct = checkMorseCode(morseCode, word);
-      alert(
-        correct
-          ? again
-            ? "That was right"
-            : "That's right!"
-          : again
-            ? "Sure, let's try that again!"
-            : "Not quite!"
-      );
-      if (correct && !again) {
-        break;
+    if (mode === "to-morse") {
+      mainWord.textContent = word;
+      while (true) {
+        const { morseCode, again } = await getWord();
+        const correct = checkMorseCode(morseCode, word);
+        alert(
+          correct
+            ? again
+              ? "That was right"
+              : "That's right!"
+            : again
+              ? "Sure, let's try that again!"
+              : "Not quite!"
+        );
+        if (correct && !again) {
+          break;
+        }
       }
+    } else {
+      mainMorse.textContent = word
+        .split("")
+        .map((letter) => toMorseCodeMappings[letter.toLowerCase()])
+        .join(" / ");
+      await /** @type {Promise<void>} */ (
+        new Promise((resolve) => {
+          const submitListener = (/** @type {Event} */ e) => {
+            const correct = answer.value === word;
+            const isAgain = e.target === again;
+            alert(
+              correct
+                ? isAgain
+                  ? "That was right"
+                  : "That's right!"
+                : isAgain
+                  ? "Sure, let's try that again!"
+                  : "Not quite!"
+            );
+            if (correct && !isAgain) {
+              resolve();
+              answer.value = "";
+              done.removeEventListener("click", submitListener);
+              again.removeEventListener("click", submitListener);
+            }
+          };
+          done.addEventListener("click", submitListener);
+          again.addEventListener("click", submitListener);
+        })
+      );
     }
   }
 })();

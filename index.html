@@ -15,14 +15,18 @@
       <p>Languages from MonkeyType</p>
     </form>
     <main hidden>
-      <div id="main-word"></div>
-      <div id="morse-preview"></div>
-      <div>
-        <button type="button" id="done">Done</button>
-        <button class="secondary" type="button" id="again">
-          Give me that one again
-        </button>
+      <div id="to-morse">
+        <div id="main-word"></div>
+        <div id="morse-preview"></div>
       </div>
+      <div id="from-morse">
+        <div id="main-morse"></div>
+        <input id="answer" class="secondary" />
+      </div>
+      <button type="button" id="done">Done</button>
+      <button class="secondary" type="button" id="again">
+        Give me that one again
+      </button>
     </main>
   </body>
   <script src="main.js"></script>

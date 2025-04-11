@@ -15,7 +15,8 @@ p {
 }
 
 select,
-button {
+button,
+input {
   font: inherit;
   padding: 0.5rem 1rem;
   border: 0;
@@ -24,16 +25,19 @@ button {
   border-radius: 0.5rem;
 }
 select:hover,
-button:hover {
+button:hover,
+input:hover {
   background-color: #115e59;
 }
 select.secondary,
-button.secondary {
+button.secondary,
+input.secondary {
   background-color: #e5e7eb;
   color: inherit;
 }
 select.secondary:hover,
-button.secondary:hover {
+button.secondary:hover,
+input.secondary:hover {
   background-color: #d1d5db;
 }
 
@@ -46,6 +50,11 @@ main {
   justify-content: center;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+#to-morse,
+#from-morse {
+  display: contents;
 }
 
 #main-word {
