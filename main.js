@@ -64,6 +64,7 @@
         let lastKeyDown = null;
         /** @type {number | null} */
         let to = null;
+        morsePreview.textContent = "";
         const kd = (/** @type {Event} */ e) => {
           if (
             e.target &&
@@ -102,6 +103,8 @@
           resolve({ morseCode: word, again: e.target === again });
           document.body.removeEventListener("keydown", kd);
           document.body.removeEventListener("keyup", ku);
+          document.body.removeEventListener("touchstart", kd);
+          document.body.removeEventListener("touchend", ku);
           morsePreview.textContent = "";
           done.removeEventListener("click", cl);
           again.removeEventListener("click", cl);

@@ -14,6 +14,10 @@ p {
   margin-block: 0;
 }
 
+input {
+  user-select: text;
+}
+
 select,
 button,
 input {
