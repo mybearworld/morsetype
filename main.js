@@ -118,7 +118,7 @@
   /** @type {string[]} */
   const languages = await (
     await fetch(
-      "https://raw.githubusercontent.com/monkeytypegame/monkeytype/refs/heads/master/frontend/static/languages/_list.json"
+      "https://raw.githubusercontent.com/monkeytypegame/monkeytype/ed24f7f45b890cf3f651868cb594b6b761377816/frontend/static/languages/_list.json"
     )
   ).json();
   languages.forEach((language) => {
